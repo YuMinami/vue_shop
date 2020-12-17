@@ -26,7 +26,7 @@
       <el-main>Main</el-main>
     </el-container>
   </el-container>
-</template>
+</template>gi
 
 <script>
 export default {
