@@ -12,13 +12,16 @@
         <div class="toggle-button" @click="toggleCollapse">
           <i :class="isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"></i>
         </div>
-        <el-menu background-color="#333744" text-color="#fff" active-text-color="#409EFF" :collapse-transition="false" :unique-opened="true" :collapse="isCollapse" router>
+        <el-menu :default-active="activePath" background-color="#333744" text-color="#fff"
+                 active-text-color="#409EFF" :collapse-transition="false" :unique-opened="true" :collapse="isCollapse"
+                 router>
           <el-submenu :index="item.id+''" v-for="item in menuList" :key="item.id">
             <template slot="title">
               <i :class="iconsObj[item.id]"></i>
               <span>{{ item.authName }}</span>
             </template>
-            <el-menu-item :index="'/' + subItem.path" v-for="subItem in item.children" :key="subItem.id">
+            <el-menu-item :index="'/' + subItem.path" v-for="subItem in item.children" :key="subItem.id"
+                          @click="saveNavState('/' + subItem.path)">
               <template slot="title">
                 <i class="el-icon-menu"></i>
                 <span>{{ subItem.authName }}</span>
@@ -39,6 +42,7 @@ export default {
   name: 'Home',
   created () {
     this.getMenuList()
+    this.activePath = window.sessionStorage.getItem('activePath')
   },
   data () {
     return {
@@ -50,7 +54,8 @@ export default {
         102: 'el-icon-s-order',
         145: 'el-icon-s-marketing'
       },
-      isCollapse: false
+      isCollapse: false,
+      activePath: ''
     }
   },
   methods: {
@@ -72,6 +77,10 @@ export default {
     },
     toggleCollapse () {
       this.isCollapse = !this.isCollapse
+    },
+    saveNavState (activePath) {
+      window.sessionStorage.setItem('activePath', activePath)
+      this.activePath = activePath
     }
   }
 }
@@ -88,21 +97,23 @@ export default {
   font-size: 20px;
 }
 
-.el-header div{
+.el-header div {
   display: flex;
   align-items: center;
 }
 
-.el-header div span{
+.el-header div span {
   margin-left: 15px;
 }
 
 .el-aside {
   background-color: #333744;
 }
+
 .el-aside .el-menu {
   border-right: none;
 }
+
 .el-main {
   background-color: #EAEDF1;
 }
