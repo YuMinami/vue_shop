@@ -112,9 +112,9 @@
       </el-form>
       <!--      底部区-->
       <span slot="footer" class="dialog-footer">
-    <el-button @click="addDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="addUser">确 定</el-button>
-  </span>
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addUser">确 定</el-button>
+      </span>
     </el-dialog>
 <!--    修改用户对话框-->
     <el-dialog
@@ -281,7 +281,7 @@ export default {
         if (!valid) return
         const { data: res } = await this.axios.post('users', this.addForm)
         if (res.meta.status !== 201) {
-          this.$message.error('添加用户失败1')
+          this.$message.error('添加用户失败!')
           return
         }
         this.$message.success('添加用户成功！')
