@@ -1,6 +1,6 @@
 <template>
   <div>
-<!--    面包屑导航区域-->
+    <!--    面包屑导航区域-->
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">
         首页
@@ -397,23 +397,16 @@ export default {
       }
       this.roleList = res.data
       // console.log(this.roleList)
-      // 优化*****************************
+      // 将当前的角色id赋值到oldRoleId，用于上传时判断角色是否改变
       const { data: res0 } = await this.axios.get('users/' + this.userInfo.id)
-      console.log(res0)
       this.oldRoleId = res0.data.rid
-      console.log(res0.data.rid)
-      console.log(this.oldRoleId)
-      // 优化*****************************
       this.setRoleDialogVisible = true
     },
     // 点击按钮分配角色保存
     async saveRoleInfo() {
-      // 优化*****************************
-      console.log(this.selectRoleId + '***********')
       if (this.oldRoleId === this.selectRoleId) {
         return this.$message.error('请选择角色')
       }
-      // 优化*****************************
       const { data: res } = await this.axios.put(`users/${this.userInfo.id}/role`, { rid: this.selectRoleId })
       if (res.meta.status !== 200) {
         return this.$message.error('设置角色失败！')
@@ -426,6 +419,7 @@ export default {
     setRoleDialogClosed() {
       this.selectRoleId = ''
       this.userInfo = {}
+      this.oldRoleId = ''
     }
   }
 }
