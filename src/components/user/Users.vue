@@ -397,14 +397,23 @@ export default {
       }
       this.roleList = res.data
       // console.log(this.roleList)
+      // 优化*****************************
       const { data: res0 } = await this.axios.get('users/' + this.userInfo.id)
       console.log(res0)
       this.oldRoleId = res0.data.rid
       console.log(res0.data.rid)
+      console.log(this.oldRoleId)
+      // 优化*****************************
       this.setRoleDialogVisible = true
     },
     // 点击按钮分配角色保存
     async saveRoleInfo() {
+      // 优化*****************************
+      console.log(this.selectRoleId + '***********')
+      if (this.oldRoleId === this.selectRoleId) {
+        return this.$message.error('请选择角色')
+      }
+      // 优化*****************************
       const { data: res } = await this.axios.put(`users/${this.userInfo.id}/role`, { rid: this.selectRoleId })
       if (res.meta.status !== 200) {
         return this.$message.error('设置角色失败！')
