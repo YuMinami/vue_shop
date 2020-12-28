@@ -30,8 +30,42 @@
       </el-row>
       <!--      tab页签区-->
       <el-tabs v-model="activeName" @tab-click="handleTabClick">
-        <el-tab-pane label="动态参数" name="first">用户管理</el-tab-pane>
-        <el-tab-pane label="静态属性" name="second">配置管理</el-tab-pane>
+        <!--        添加动态参数的面板-->
+        <el-tab-pane label="动态参数" name="many">
+          <el-button type="primary" size="mini" :disabled="isBtnDisabled">添加参数</el-button>
+          <!--          动态参数表格-->
+          <el-table :data="manyTableData" border stripe>
+            <!--            展开行-->
+            <el-table-column type="expand"></el-table-column>
+            <!--            索引列-->
+            <el-table-column label="#" type="index"></el-table-column>
+            <el-table-column label="参数名称" prop="attr_name"></el-table-column>
+            <el-table-column label="操作">
+              <template v-slot:default="scope">
+                <el-button size="mini" type="primary" icon="el-icon-edit">编辑</el-button>
+                <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+        <!--        添加静态属性的面板-->
+        <el-tab-pane label="静态属性" name="only">
+          <el-button type="primary" size="mini" :disabled="isBtnDisabled">添加属性</el-button>
+          <!--          静态属性表格-->
+          <el-table :data="onlyTableData" border stripe>
+            <!--            展开行-->
+            <el-table-column type="expand"></el-table-column>
+            <!--            索引列-->
+            <el-table-column label="#" type="index"></el-table-column>
+            <el-table-column label="属性名称" prop="attr_name"></el-table-column>
+            <el-table-column label="操作">
+              <template v-slot:default="scope">
+                <el-button size="mini" type="primary" icon="el-icon-edit">编辑</el-button>
+                <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
       </el-tabs>
     </el-card>
   </div>
@@ -47,7 +81,11 @@ export default {
       // 级联选择框选中的分类id数组
       selectedCateKeys: [],
       // 被激活的页签的名称
-      activeName: 'first'
+      activeName: 'many',
+      // 动态参数数据
+      manyTableData: [],
+      // 静态属性的数据
+      onlyTableData: []
     }
   },
   created() {
@@ -65,13 +103,44 @@ export default {
     },
     //  级联选择器选择框选中项变化，会触发这个方法
     handleChange() {
-      if (this.selectedCateKeys.length !== 3) {
-        this.selectedCateKeys = []
-      }
+      this.getParamsData()
     },
     // Tab页签点击事件的处理方法
     handleTabClick() {
-      console.log(this.activeName);
+      this.getParamsData()
+      console.log(this.activeName)
+    },
+    // 获取参数列表数据
+    async getParamsData() {
+      if (this.selectedCateKeys.length !== 3) {
+        this.selectedCateKeys = []
+      }
+      const { data: res } = await this.axios.get(`categories/${this.cateId}/attributes`, { params: { sel: this.activeName } })
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取分类参数失败')
+      }
+      console.log(res.data)
+      if (this.activeName === 'many') {
+        this.manyTableData = res.data
+      } else {
+        this.onlyTableData = res.data
+      }
+    }
+  },
+  computed: {
+    // 如果按钮需要被禁用则返回true，否则返回false
+    isBtnDisabled () {
+      if (this.selectedCateKeys.length !== 3) {
+        return true
+      }
+      return false
+    },
+    // 选中三级分类的id
+    cateId () {
+      if (this.selectedCateKeys.length === 3) {
+        return this.selectedCateKeys[2]
+      }
+      return null
     }
   }
 }
