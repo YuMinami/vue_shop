@@ -39,16 +39,23 @@
             <el-table-column type="expand">
               <template v-slot:default="scope">
                 <!--                循环渲染tag标签-->
-                <el-tag v-for="(item, i) in scope.row.attr_vals" :key="i" closable>{{item}}</el-tag>
+                <el-tag
+                  v-for="(item, i) in scope.row.attr_vals"
+                  :key="i"
+                  closable
+                  @close="handleClose(i, scope.row)"
+                >
+                  {{ item }}
+                </el-tag>
                 <!--                输入的文本框-->
                 <el-input
-                  class="input-new-tag"
                   v-if="scope.row.inputVisible"
-                  v-model="scope.row.inputValue"
                   ref="saveTagInput"
+                  v-model="scope.row.inputValue"
                   size="small"
                   @keyup.enter.native="handleInputConfirm(scope.row)"
                   @blur="handleInputConfirm(scope.row)"
+                  class="input-new-tag"
                 >
                 </el-input>
                 <!--                添加的按钮-->
@@ -72,7 +79,32 @@
           <!--          静态属性表格-->
           <el-table :data="onlyTableData" border stripe>
             <!--            展开行-->
-            <el-table-column type="expand"></el-table-column>
+            <el-table-column type="expand">
+              <template v-slot:default="scope">
+                <!--                循环渲染tag标签-->
+                <el-tag
+                  v-for="(item, i) in scope.row.attr_vals"
+                  :key="i"
+                  closable
+                  @close="handleClose(i, scope.row)"
+                >
+                  {{ item }}
+                </el-tag>
+                <!--                输入的文本框-->
+                <el-input
+                  v-if="scope.row.inputVisible"
+                  ref="saveTagInput"
+                  v-model="scope.row.inputValue"
+                  size="small"
+                  @keyup.enter.native="handleInputConfirm(scope.row)"
+                  @blur="handleInputConfirm(scope.row)"
+                  class="input-new-tag"
+                >
+                </el-input>
+                <!--                添加的按钮-->
+                <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+ New Tag</el-button>
+              </template>
+            </el-table-column>
             <!--            索引列-->
             <el-table-column label="#" type="index"></el-table-column>
             <el-table-column label="属性名称" prop="attr_name"></el-table-column>
@@ -182,6 +214,9 @@ export default {
     async getParamsData() {
       if (this.selectedCateKeys.length !== 3) {
         this.selectedCateKeys = []
+        this.manyTableData = []
+        this.onlyTableData = []
+        return
       }
       const { data: res } = await this.axios.get(`categories/${this.cateId}/attributes`, { params: { sel: this.activeName } })
       if (res.meta.status !== 200) {
@@ -194,7 +229,7 @@ export default {
         // 文本框中输入的数据
         item.inputValue = ''
       })
-      console.log(res.data)
+      // console.log(res.data)
       if (this.activeName === 'many') {
         this.manyTableData = res.data
       } else {
@@ -275,7 +310,11 @@ export default {
         return
       }
       //  如果没有return，则证明输入了内容，需要做额外操作
-      console.log('ok')
+      // console.log('ok')
+      row.attr_vals.push(row.inputValue.trim())
+      row.inputValue = ''
+      row.inputVisible = false
+      this.saveAttrVals(row)
     },
     // 点击按钮，展示文本输入框
     showInput(row) {
@@ -285,6 +324,20 @@ export default {
       this.$nextTick(_ => {
         this.$refs.saveTagInput.$refs.input.focus()
       })
+    },
+    // 删除对应的参数可选项
+    handleClose(i, row) {
+      row.attr_vals.splice(i, 1)
+      this.saveAttrVals(row)
+    },
+    async saveAttrVals(row) {
+      //  需要发起请求保存此次操作
+      const { data: res } = await this.axios.put(`categories/${this.cateId}/attributes/${row.attr_id}`,
+        { attr_name: row.attr_name, attr_sel: row.attr_sel, attr_vals: row.attr_vals.join(',') })
+      if (res.meta.status !== 200) {
+        return this.$message.error('修改参数项失败')
+      }
+      this.$message.success('修改参数项成功')
     }
   },
   computed: {
