@@ -19,6 +19,16 @@ axios.interceptors.request.use(config => {
   config.headers.authorization = window.sessionStorage.getItem('token')
   return config
 })
+Vue.filter('dateFormat', function (originVal) {
+  const dt = new Date(originVal)
+  const y = dt.getFullYear()
+  const m = (dt.getMonth() + 1 + '').padStart(2, '0')
+  const d = (dt.getDate() + '').padStart(0, '0')
+  const hh = (dt.getHours() + '').padStart(0, '0')
+  const mm = (dt.getMinutes() + '').padStart(0, '0')
+  const ss = (dt.getSeconds() + '').padStart(0, '0')
+  return `${y}-${m}-${d} ${hh}:${mm}:${ss}`
+})
 
 new Vue({
   router,
