@@ -253,15 +253,16 @@ export default {
           this.addForm.attrs.push(newInfo)
         })
         form.attrs = this.addForm.attrs
-        console.log(form)
+        // console.log(form)
         // 发起请求添加商品
         // 商品的名称必须是唯一的
         const { data: res } = await this.axios.post('goods', form)
-        if (res.data.status !== 201) {
+        console.log(res)
+        if (res.meta.status !== 201) {
           return this.$message.error('添加商品失败')
         }
         this.$message.success('添加商品成功')
-        this.$router.push('/goods')
+        await this.$router.push('/goods')
       })
     }
   },
