@@ -41,7 +41,7 @@
         <el-table-column label="操作">
           <template v-slot:default="scope">
             <el-button icon="el-icon-edit" type="primary" size="mini" @click="showBox"></el-button>
-            <el-button icon="el-icon-map-location" type="success" size="mini"></el-button>
+            <el-button icon="el-icon-map-location" type="success" size="mini" @click="showProgressBox"></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -56,7 +56,7 @@
         :total="total">
       </el-pagination>
     </el-card>
-<!--    修改地址的对话框-->
+    <!--    修改地址的对话框-->
     <el-dialog
       title="修改地址"
       :visible.sync="addressVisible"
@@ -75,6 +75,14 @@
         <el-button @click="addressVisible = false">取 消</el-button>
         <el-button type="primary" @click="addressVisible = false">确 定</el-button>
       </span>
+    </el-dialog>
+    <!--    展示物流信息的对话框-->
+    <el-dialog
+      title="物流进度"
+      :visible.sync="progressVisible"
+      width="50%"
+    >
+      <span>这是一段信息</span>
     </el-dialog>
   </div>
 </template>
@@ -101,7 +109,9 @@ export default {
         address1: [{ required: true, message: '请选择省市区县', trigger: 'blur' }],
         address2: [{ required: true, message: '请填写详细地址', trigger: 'blur' }]
       },
-      cityData: cityData
+      cityData: cityData,
+      progressVisible: false,
+      progressInfo: []
     }
   },
   created() {
@@ -132,6 +142,15 @@ export default {
     },
     addressDialogClosed() {
       this.$refs.addressFormRef.resetFields()
+    },
+    async showProgressBox() {
+      const { data: res } = await this.axios.get('/kuaidi/70365716896101')
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取物流信息失败')
+      }
+      this.progressInfo = res.data
+      console.log(this.progressInfo)
+      this.progressVisible = true
     }
   }
 }
