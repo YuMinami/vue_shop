@@ -188,6 +188,30 @@ export default {
       }
     }
   },
+  computed: {
+    // 如果按钮需要被禁用则返回true，否则返回false
+    isBtnDisabled () {
+      if (this.selectedCateKeys.length !== 3) {
+        return true
+      }
+      return false
+    },
+    // 选中三级分类的id
+    cateId () {
+      if (this.selectedCateKeys.length === 3) {
+        return this.selectedCateKeys[2]
+      }
+      return null
+    },
+    // 动态计算标题的文本
+    titleText() {
+      if (this.activeName === 'many') {
+        return '动态参数'
+      } else {
+        return '静态属性'
+      }
+    }
+  },
   created() {
     this.getCateList()
   },
@@ -338,30 +362,6 @@ export default {
         return this.$message.error('修改参数项失败')
       }
       this.$message.success('修改参数项成功')
-    }
-  },
-  computed: {
-    // 如果按钮需要被禁用则返回true，否则返回false
-    isBtnDisabled () {
-      if (this.selectedCateKeys.length !== 3) {
-        return true
-      }
-      return false
-    },
-    // 选中三级分类的id
-    cateId () {
-      if (this.selectedCateKeys.length === 3) {
-        return this.selectedCateKeys[2]
-      }
-      return null
-    },
-    // 动态计算标题的文本
-    titleText() {
-      if (this.activeName === 'many') {
-        return '动态参数'
-      } else {
-        return '静态属性'
-      }
     }
   }
 }

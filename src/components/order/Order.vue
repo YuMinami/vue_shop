@@ -1,15 +1,6 @@
 <template>
   <div>
-    <!--    面包屑导航区域-->
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/home' }">
-        首页
-      </el-breadcrumb-item>
-      <el-breadcrumb-item>订单管理</el-breadcrumb-item>
-      <el-breadcrumb-item>订单列表</el-breadcrumb-item>
-    </el-breadcrumb>
-    <!--    卡片视图-->
-    <el-card class="box-card">
+    <el-card>
       <el-row>
         <el-col :span="8">
           <el-input placeholder="请输入内容">
@@ -17,7 +8,7 @@
           </el-input>
         </el-col>
       </el-row>
-<!--      订单列表数据-->
+      <!--      订单列表数据-->
       <el-table :data="orderList" border stripe>
         <el-table-column label="#" type="index"></el-table-column>
         <el-table-column label="订单编号" prop="order_number"></el-table-column>
@@ -39,7 +30,7 @@
           </template>
         </el-table-column>
         <el-table-column label="操作">
-          <template v-slot:default="scope">
+          <template>
             <el-button icon="el-icon-edit" type="primary" size="mini" @click="showBox"></el-button>
             <el-button icon="el-icon-map-location" type="success" size="mini" @click="showProgressBox"></el-button>
           </template>
